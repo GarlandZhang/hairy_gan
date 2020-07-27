@@ -3,6 +3,7 @@ import base64
 import io
 import numpy as np    
 from PIL import Image
+import os
 
 app = Flask(__name__, template_folder='./templates/')
 
@@ -16,7 +17,10 @@ def upload():
   if request.method == 'POST':
     f = request.files['file']
     f.save('./static/input.png')
-    print('Saved image')
+
+    if os.path.exists('./static/prediction.png'):
+      os.remove('./static/prediction.png') # TEMP CONDITION 
+
   return render_template('index.html')
 
 @app.route('/predictions', methods=['POST']) # GET for user, POST for receiving predictions from model
