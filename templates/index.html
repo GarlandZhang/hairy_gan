@@ -4,6 +4,16 @@
     <title>Index</title>
 </head>
 <body>
+    <label>Upload image</label>
+    <form action='/upload' method='POST' enctype='multipart/form-data'>
+      <input type='file' name='file'/>
+      <input type='submit'/>
+    </form
+
+    <label>Input image</label>
+    <img src="./static/input.png" alt="Input">
+
+    <label>Prediction</label>
     <img src="{{prediction_path}}" alt="Prediction">
 </body>
 </html>

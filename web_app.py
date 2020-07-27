@@ -11,6 +11,14 @@ def main():
   prediction_path = './static/prediction.png'
   return render_template('index.html', prediction_path=prediction_path)
 
+@app.route('/upload', methods=['POST'])
+def upload():
+  if request.method == 'POST':
+    f = request.files['file']
+    f.save('./static/input.png')
+    print('Saved image')
+  return render_template('index.html')
+
 @app.route('/predictions', methods=['POST']) # GET for user, POST for receiving predictions from model
 def predictions():
   if request.method == 'POST':
