@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect
 import base64
 import io
 import numpy as np    
@@ -25,7 +25,7 @@ def upload():
     while not os.path.exists('./static/prediction.png'):
       time.sleep(0.1)
 
-  return render_template('index.html')
+  return redirect('/')
 
 @app.route('/predictions', methods=['POST']) # GET for user, POST for receiving predictions from model
 def predictions():
