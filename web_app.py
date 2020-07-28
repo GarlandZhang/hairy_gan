@@ -4,13 +4,14 @@ import io
 import numpy as np    
 from PIL import Image
 import os
+import time
 
 app = Flask(__name__, template_folder='./templates/')
 
 @app.route('/')
 def main():
   prediction_path = './static/prediction.png'
-  return render_template('index.html', prediction_path=prediction_path)
+  return render_template('index.html')
 
 @app.route('/upload', methods=['POST'])
 def upload():
@@ -20,6 +21,9 @@ def upload():
 
     if os.path.exists('./static/prediction.png'):
       os.remove('./static/prediction.png') # TEMP CONDITION 
+
+    while not os.path.exists('./static/prediction.png'):
+      time.sleep(0.1)
 
   return render_template('index.html')
 
@@ -36,6 +40,6 @@ def predictions():
     prediction_path = './static/prediction.png'
     img.save(prediction_path)
 
-    return render_template('index.html', prediction_path=prediction_path)
+    return render_template('index.html')
 
 app.run(host='0.0.0.0', port=8080)
