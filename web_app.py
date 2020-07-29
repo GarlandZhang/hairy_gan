@@ -5,25 +5,60 @@ import numpy as np
 from PIL import Image
 import os
 import time
+import json
+import requests
+
+IMGUR_URL = 'https://api.imgur.com/3/'
+CLIENT_ID = '853e92d46b2081a'
+CLIENT_SECRET = '5c77e3cad7f64553ce00913309896c4482ed0c79'
+RAGIC_ID = 'WGhod3FVU0lmNHNjaXVyTmpXbUJhVjlKMUNxTGVZM2JJejk2K2FHRW5XT3I2dXB5bXY0UythaWVQbUd6MXUrS293TjZKT1VBYStBPQ=='
 
 app = Flask(__name__, template_folder='./templates/')
 
 @app.route('/')
 def main():
-  prediction_path = './static/prediction.png'
   return render_template('index.html')
 
 @app.route('/upload', methods=['POST'])
 def upload():
   if request.method == 'POST':
     f = request.files['file']
-    f.save('./static/input.png')
+    f.save('./static/img.jpg') # hack
+    img_bytes = open('./static/img.jpg', 'rb').read()
 
-    if os.path.exists('./static/prediction.png'):
-      os.remove('./static/prediction.png') # TEMP CONDITION 
+    # save to img store
+    print('Save to image store')
 
-    while not os.path.exists('./static/prediction.png'):
-      time.sleep(0.1)
+    res = requests.post(
+      url= IMGUR_URL + 'upload.json',
+      data={
+        'image': base64.b64encode(img_bytes),
+        'type': 'base64',
+      },
+      headers={
+        'Authorization': 'Client-ID ' + CLIENT_ID,
+      }
+    )
+
+    data = json.loads(res.content.decode("utf-8"))['data']
+
+    # save to database
+    print('Save to database')
+
+    res = requests.post(
+      url='https://na3.ragic.com/weewoowarrior/hairygan/2?v=3&api', 
+      params={
+          '1000014': data['link'],
+          '1000015': data['height'],
+          '1000016': data['width'], 
+          '1000017': '', # predicted url
+          '1000018': 0, # processed
+          '1000020': 1, # eyeglasses
+      },
+      headers={
+          'Authorization': 'Basic ' + RAGIC_ID
+      }
+  )
 
   return redirect('/')
 
