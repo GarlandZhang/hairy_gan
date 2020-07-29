@@ -58,23 +58,46 @@ def upload():
       headers={
           'Authorization': 'Basic ' + RAGIC_ID
       }
+    )
+
+    entry_id = json.loads(res.content)['data']['_ragicId']
+
+    # stall until dont
+    while True:
+      db_data_retrieval_res = requests.get(
+        url='https://na3.ragic.com/weewoowarrior/hairygan/2?v=3&api',
+        headers={
+          'Authorization': 'Basic ' + RAGIC_ID
+        }
+      )
+      retrieved_data = json.loads(db_data_retrieval_res.content)
+
+      entry = retrieved_data[str(entry_id)]
+
+      if int(entry['processed']) == 1:
+        break
+      
+      time.sleep(1)
+
+
+  return redirect('/predictions/' + str(entry_id))
+
+@app.route('/predictions/<int:entry_id>') # GET for user, POST for receiving predictions from model
+def predictions(entry_id):
+  db_data_retrieval_res = requests.get(
+    url='https://na3.ragic.com/weewoowarrior/hairygan/2?v=3&api',
+    headers={
+      'Authorization': 'Basic ' + RAGIC_ID
+    }
   )
+  retrieved_data = json.loads(db_data_retrieval_res.content)
 
-  return redirect('/')
+  entry = retrieved_data[str(entry_id)]
 
-@app.route('/predictions', methods=['POST']) # GET for user, POST for receiving predictions from model
-def predictions():
-  if request.method == 'POST':
-    img_prop_enc = request.form.get('img_props')
-    img_prop = list(base64.b64decode(img_prop_enc))
+  original_image_url = entry['original_image_url']
 
-    img_enc = request.form.get('predictions')
-    img_dec = base64.b64decode(img_enc)
-    img = Image.frombytes('RGB', (img_prop[1], img_prop[0]), img_dec, 'raw')
+  prediction_image_url = entry['prediction_image_url']
 
-    prediction_path = './static/prediction.png'
-    img.save(prediction_path)
-
-    return render_template('index.html')
+  return render_template('predictions.html', original_image_url=original_image_url, prediction_image_url=prediction_image_url)
 
 app.run(host='0.0.0.0', port=8080)
