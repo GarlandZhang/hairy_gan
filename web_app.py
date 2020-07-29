@@ -12,6 +12,7 @@ IMGUR_URL = 'https://api.imgur.com/3/'
 CLIENT_ID = '853e92d46b2081a'
 CLIENT_SECRET = '5c77e3cad7f64553ce00913309896c4482ed0c79'
 RAGIC_ID = 'WGhod3FVU0lmNHNjaXVyTmpXbUJhVjlKMUNxTGVZM2JJejk2K2FHRW5XT3I2dXB5bXY0UythaWVQbUd6MXUrS293TjZKT1VBYStBPQ=='
+DB_URL = 'https://na3.ragic.com/weewoowarrior/hairygan/2?v=3&api'
 
 app = Flask(__name__, template_folder='./templates/')
 
@@ -46,7 +47,7 @@ def upload():
     print('Save to database')
 
     res = requests.post(
-      url='https://na3.ragic.com/weewoowarrior/hairygan/2?v=3&api', 
+      url=DB_URL, 
       params={
           '1000014': data['link'],
           '1000015': data['height'],
@@ -65,7 +66,7 @@ def upload():
     # stall until dont
     while True:
       db_data_retrieval_res = requests.get(
-        url='https://na3.ragic.com/weewoowarrior/hairygan/2?v=3&api',
+        url=DB_URL,
         headers={
           'Authorization': 'Basic ' + RAGIC_ID
         }
@@ -85,7 +86,7 @@ def upload():
 @app.route('/predictions/<int:entry_id>') # GET for user, POST for receiving predictions from model
 def predictions(entry_id):
   db_data_retrieval_res = requests.get(
-    url='https://na3.ragic.com/weewoowarrior/hairygan/2?v=3&api',
+    url=DB_URL,
     headers={
       'Authorization': 'Basic ' + RAGIC_ID
     }
