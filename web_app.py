@@ -23,7 +23,10 @@ def main():
 @app.route('/upload', methods=['POST'])
 def upload():
   if request.method == 'POST':
+    # get form values
     eyeglasses = 1 if request.form.get('eyeglasses') == 'on' else 0
+    hair_color = request.form.get('hair_color')
+
     f = request.files['file']
     f.save('./static/img.jpg') # hack
     img_bytes = open('./static/img.jpg', 'rb').read()
@@ -55,7 +58,8 @@ def upload():
           '1000016': data['width'], 
           '1000017': '', # predicted url
           '1000018': 0, # processed
-          '1000020': eyeglasses, # eyeglasses
+          '1000020': eyeglasses,
+          '1000023': hair_color,
       },
       headers={
           'Authorization': 'Basic ' + RAGIC_ID
