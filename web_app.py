@@ -23,6 +23,7 @@ def main():
 @app.route('/upload', methods=['POST'])
 def upload():
   if request.method == 'POST':
+    eyeglasses = 1 if request.form.get('eyeglasses') == 'on' else 0
     f = request.files['file']
     f.save('./static/img.jpg') # hack
     img_bytes = open('./static/img.jpg', 'rb').read()
@@ -54,7 +55,7 @@ def upload():
           '1000016': data['width'], 
           '1000017': '', # predicted url
           '1000018': 0, # processed
-          '1000020': 1, # eyeglasses
+          '1000020': eyeglasses, # eyeglasses
       },
       headers={
           'Authorization': 'Basic ' + RAGIC_ID
@@ -78,13 +79,16 @@ def upload():
       if int(entry['processed']) == 1:
         break
       
+      print('Not processed')
       time.sleep(1)
 
 
+  print('Redirect to page')
   return redirect('/predictions/' + str(entry_id))
 
-@app.route('/predictions/<int:entry_id>') # GET for user, POST for receiving predictions from model
+@app.route('/predictions/<int:entry_id>')
 def predictions(entry_id):
+  print('uwuw')
   db_data_retrieval_res = requests.get(
     url=DB_URL,
     headers={
